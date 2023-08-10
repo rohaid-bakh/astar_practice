@@ -22,14 +22,14 @@ public class AStarGrid : MonoBehaviour
     } 
 
     public void MakeGrid() {
-        float topLeftX = transform.position.x - (gridWorldSize.x/2f);
-        float topLeftY = transform.position.z + (gridWorldSize.y/2f);
-        Vector3 topLeft = new Vector3(topLeftX, 0f, topLeftY);
+        float bottomLeftX = transform.position.x - (gridWorldSize.x/2f);
+        float bottomLeftY = transform.position.z - (gridWorldSize.y/2f);
+        Vector3 bottomLeft = new Vector3(bottomLeftX, 0f, bottomLeftY);
         for(int row = 0; row < gridSizeX ; row++){
             for(int column = 0; column < gridSizeY ; column++){
                float offsetX = row * nodeDiameter + nodeRadius;
                float offsetY = column* nodeDiameter + nodeRadius;
-               Vector3 nodeCenter = new Vector3(topLeft.x + offsetX, 0f, topLeftY - offsetY);
+               Vector3 nodeCenter = new Vector3(bottomLeft.x + offsetX, 0f, bottomLeftY + offsetY);
                bool isObstacle = Physics.CheckBox(nodeCenter, new Vector3(nodeRadius, nodeRadius, nodeRadius), Quaternion.identity, unWalkableMask);
                grid[row,column] = new Node(isObstacle, nodeCenter);
             }
@@ -43,15 +43,8 @@ public class AStarGrid : MonoBehaviour
     void OnDrawGizmos()
     {
         if(debug){
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawSphere(transform.position,10f);
             Gizmos.color = Color.blue;
             Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, 1f, gridWorldSize.y));
-            Gizmos.color = Color.red; 
-            float topLeftX = transform.position.x - (gridWorldSize.x/2f);
-            float topLeftY = transform.position.z + (gridWorldSize.y/2f);
-            Vector3 topLeft = new Vector3(topLeftX, 0f , topLeftY);
-            Gizmos.DrawSphere(topLeft, 10f);
             Gizmos.color = Color.black;
             foreach(Node n in grid){
                     Gizmos.color = n.isObstacle? Color.red: Color.black;

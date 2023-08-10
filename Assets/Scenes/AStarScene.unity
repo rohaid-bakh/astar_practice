@@ -1144,7 +1144,8 @@ MonoBehaviour:
     m_Bits: 64
   gridWorldSize: {x: 200, y: 200}
   nodeRadius: 10
-  debug: 0
+  detectableObj: {fileID: 1222600918}
+  debug: 1
 --- !u!1 &1222600914
 GameObject:
   m_ObjectHideFlags: 0

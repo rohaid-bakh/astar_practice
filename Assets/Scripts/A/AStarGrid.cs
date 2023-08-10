@@ -4,10 +4,13 @@ using UnityEngine;
 
 public class AStarGrid : MonoBehaviour
 {
+    //TODO: Write it so that the grid takes into account any rotations!
     public LayerMask unWalkableMask;
     public Vector2 gridWorldSize;
     public float nodeRadius;
     Node[,] grid;
+
+    public Transform detectableObj;
 
     int gridSizeX, gridSizeY;
     public bool debug = false;
@@ -36,20 +39,35 @@ public class AStarGrid : MonoBehaviour
         }
     }
 
-    public void WorldToNode(Vector3 NodeLocation){
-        
+    public Vector2 WorldToNode(Vector3 NodeLocation){
+        float bottomLeftX = transform.position.x - (gridWorldSize.x/2f);
+        float bottomLeftY = transform.position.z - (gridWorldSize.y/2f);
+        Vector3 bottomLeft = new Vector3(bottomLeftX, 0f, bottomLeftY);
+        Vector3 diff = NodeLocation - bottomLeft;
+        int cordX = Mathf.FloorToInt(Mathf.Clamp((diff.x/nodeDiameter), 0f, gridSizeX-1));
+        int cordY = Mathf.FloorToInt(Mathf.Clamp(diff.z/nodeDiameter, 0f, gridSizeY-1));
+        return new Vector2(cordX, cordY);
     }
 
     void OnDrawGizmos()
     {
         if(debug){
             Gizmos.color = Color.blue;
+            // would have to rotate it according to the plane and not! to the a* script
+            // Gizmos.matrix = transform.worldToLocalMatrix;
             Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, 1f, gridWorldSize.y));
             Gizmos.color = Color.black;
-            foreach(Node n in grid){
+            if(grid!= null){
+                foreach(Node n in grid){
                     Gizmos.color = n.isObstacle? Color.red: Color.black;
                     Gizmos.DrawWireCube(n.worldPosition, Vector3.one * (nodeDiameter-.1f));
                 }
+                if(detectableObj!= null){
+                    Vector2 location = WorldToNode(detectableObj.position);
+                    Gizmos.color = Color.cyan;
+                    Gizmos.DrawCube(grid[Mathf.FloorToInt(location.x),Mathf.FloorToInt(location.y)].worldPosition, Vector3.one*(nodeDiameter-.1f));
+                }
+            }
             }
         }
 }

@@ -13,7 +13,7 @@ public class AStarGrid : MonoBehaviour
 
     public Transform detectableObj;
     public Transform gridTransform;
-    public TextMeshProUGUI debug1, debug2, debug3;
+    public TextMeshProUGUI debug1, debug2, debug3, debug4;
 
     int gridSizeX, gridSizeY;
     public bool debug = false;
@@ -60,26 +60,19 @@ public class AStarGrid : MonoBehaviour
 
             Gizmos.color = Color.blue;
             Matrix4x4 def = Gizmos.matrix;
-            Matrix4x4 gridRotation = Matrix4x4.TRS(gridTransform.position, gridTransform.rotation, Vector3.one);
+            Matrix4x4 gridRotation = Matrix4x4.TRS(gridTransform.position, gridTransform.rotation,Vector3.one);
             Gizmos.matrix = gridRotation; // so that the blue box covers the grid;
+
+            Vector3 worldToLocal = gridRotation.MultiplyVector(gridTransform.position);
             Gizmos.DrawWireCube(Vector3.zero, new Vector3(gridWorldSize.x, 1f, gridWorldSize.y));
 
             Gizmos.matrix = def; // reset it 
 
-            // Gizmos.color = Color.black;
-            // Gizmos.DrawSphere(gridTransform.position, 5f);
-
+            //grid axis node calculation
             nodeDiameter = nodeRadius*2;
             gridSizeX = Mathf.FloorToInt(gridWorldSize.x/nodeDiameter);
             gridSizeY = Mathf.FloorToInt(gridWorldSize.y/nodeDiameter);
             Vector3 bottomLeft = gridTransform.position - (gridTransform.forward*(gridWorldSize.y/2)) - (gridTransform.right*(gridWorldSize.x/2));
-
-            // Gizmos.color = Color.red; 
-            // Gizmos.DrawSphere(bottomLeft, 5f);
-            
-            debug1.text = $"X offset: {gridTransform.right * (gridWorldSize.x/2)}";
-            debug2.text = $"Y offset: {gridTransform.forward * (gridWorldSize.y/2)}";
-            debug3.text = $"gridsizeX: {gridSizeX} \n gridsizeY: {gridSizeY}";
 
             for(int row = 0; row < gridSizeX ; row ++ ){
                 for(int column = 0; column < gridSizeY; column++){            

@@ -6,11 +6,22 @@ public class Node
 {
    public bool isObstacle;
    public Vector3 worldPosition;
-   public Vector2 gridCoordinates;
+   public int xCoord;
+   public int yCoord;
    public Node parent; 
-
-   public Node(bool _isObstacle, Vector3 _worldPosition){
+   public int gCost;
+   public int hCost;
+   
+   public Node(bool _isObstacle, Vector3 _worldPosition, int _xCoord, int _yCoord){
     isObstacle = _isObstacle;
     worldPosition = _worldPosition;
+    xCoord = _xCoord;
+    yCoord = _yCoord;
+   }
+
+   public int fCost {
+      get{
+         return gCost + hCost;
+      }
    }
 }

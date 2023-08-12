@@ -60,8 +60,8 @@ public class AStarGrid : MonoBehaviour
         int xCoord = curr.xCoord;
         int yCoord = curr.yCoord;
         List<Node> neighbors = new List<Node>();
-        for(int x = -1; x <= 1 ; x++){
-            for(int y = -1; y <= 1; y++){
+        for(int x = -1; x < 2 ; x++){
+            for(int y = -1; y < 2; y++){
                 if (x == 0 && y == 0){
                     continue;
                 }
@@ -91,7 +91,13 @@ public class AStarGrid : MonoBehaviour
             if(n == WorldToNode(detectableObj.position)){
                 Gizmos.color = Color.green;
             }
-            Gizmos.DrawWireCube(n.worldPosition, new Vector3(nodeDiameter-.5f, 1f, nodeDiameter-.5f));
+            
+            if(path.Contains(n)){
+                Gizmos.color = Color.yellow;
+                Gizmos.DrawCube(n.worldPosition, new Vector3(nodeDiameter-.5f, 1f, nodeDiameter-.5f));
+            } else {
+                Gizmos.DrawWireCube(n.worldPosition, new Vector3(nodeDiameter-.5f, 1f, nodeDiameter-.5f));
+            }
         }
     }
 

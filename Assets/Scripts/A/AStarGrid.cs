@@ -31,17 +31,21 @@ public class AStarGrid : MonoBehaviour
         MakeGrid();
     } 
 
+    public void Update(){
+        MakeGrid();
+    }
+
     public void MakeGrid() {
-        float bottomLeftX = transform.position.x - (gridWorldSize.x/2f);
-        float bottomLeftY = transform.position.z - (gridWorldSize.y/2f);
-        Vector3 bottomLeft = new Vector3(bottomLeftX, 0f, bottomLeftY);
+        Vector3 bottomLeft = gridTransform.position - (gridTransform.forward*(gridWorldSize.y/2)) - (gridTransform.right*(gridWorldSize.x/2));
         for(int row = 0; row < gridSizeX ; row++){
             for(int column = 0; column < gridSizeY ; column++){
-               float offsetX = row * nodeDiameter + nodeRadius;
-               float offsetY = column* nodeDiameter + nodeRadius;
-               Vector3 nodeCenter = new Vector3(bottomLeft.x + offsetX, 0f, bottomLeftY + offsetY);
-               bool isObstacle = Physics.CheckBox(nodeCenter, new Vector3(nodeRadius, nodeRadius, nodeRadius), Quaternion.identity, unWalkableMask);
-               grid[row,column] = new Node(isObstacle, nodeCenter, row, column);
+              Vector3 nodeCenter = bottomLeft + 
+                                    (gridTransform.right * row * nodeDiameter + gridTransform.right * nodeRadius) +
+                                    (gridTransform.forward * column * nodeDiameter + gridTransform.forward * nodeRadius);
+                bool isObstacle = Physics.CheckBox(nodeCenter, new Vector3(nodeRadius, nodeRadius, nodeRadius), 
+                                    Quaternion.identity, unWalkableMask );
+                grid[row, column] = new Node(isObstacle, nodeCenter, row, column);
+
             }
         }
     }
@@ -87,6 +91,9 @@ public class AStarGrid : MonoBehaviour
 
         Gizmos.color = Color.blue;
         foreach(Node n in grid){
+            
+            Vector3[] points = DrawGridSquare(n);
+
             Gizmos.color = n.isObstacle? Color.red: Color.blue;
             if(n == WorldToNode(detectableObj.position)){
                 Gizmos.color = Color.green;
@@ -94,39 +101,27 @@ public class AStarGrid : MonoBehaviour
             
             if(path.Contains(n)){
                 Gizmos.color = Color.yellow;
-                Gizmos.DrawCube(n.worldPosition, new Vector3(nodeDiameter-.5f, 1f, nodeDiameter-.5f));
+                Gizmos.DrawLineList(points);
             } else {
-                Gizmos.DrawWireCube(n.worldPosition, new Vector3(nodeDiameter-.5f, 1f, nodeDiameter-.5f));
+                Gizmos.DrawLineList(points);
             }
         }
     }
 
-    private void calculateGridOnAxis(){
-        //grid axis node calculation
-            nodeDiameter = nodeRadius*2;
-            gridSizeX = Mathf.FloorToInt(gridWorldSize.x/nodeDiameter);
-            gridSizeY = Mathf.FloorToInt(gridWorldSize.y/nodeDiameter);
-            Vector3 bottomLeft = gridTransform.position - (gridTransform.forward*(gridWorldSize.y/2)) - (gridTransform.right*(gridWorldSize.x/2));
+    private Vector3[] DrawGridSquare(Node n){
+        Vector3 nodeCenter = n.worldPosition;
+        Vector3 BLCorner = nodeCenter - (gridTransform.forward*nodeRadius) - (gridTransform.right*nodeRadius);
+        Vector3 ULCorner = BLCorner + (gridTransform.forward*nodeDiameter);
+        Vector3 URCorner = ULCorner + (gridTransform.right*nodeDiameter);
+        Vector3 BRCorner = URCorner - (gridTransform.forward*nodeDiameter);
+        Vector3[] points = new Vector3[8]{
+            BLCorner, ULCorner,
+            ULCorner, URCorner,
+            URCorner, BRCorner,
+            BRCorner, BLCorner
+        };
 
-            for(int row = 0; row < gridSizeX ; row ++ ){
-                for(int column = 0; column < gridSizeY; column++){            
-                    Vector3 nodeCenter = bottomLeft + (gridTransform.forward*nodeRadius+ gridTransform.forward*nodeDiameter*column ) 
-                                        + (gridTransform.right*nodeRadius + gridTransform.right*nodeDiameter*row);
-                    Vector3 BLCorner = nodeCenter - (gridTransform.forward*nodeRadius) - (gridTransform.right*nodeRadius);
-                    Vector3 ULCorner = BLCorner + (gridTransform.forward*nodeDiameter);
-                    Vector3 URCorner = ULCorner + (gridTransform.right*nodeDiameter);
-                    Vector3 BRCorner = URCorner - (gridTransform.forward*nodeDiameter);
-            
-                    Vector3[] points = new Vector3[8]{
-                        BLCorner, ULCorner,
-                        ULCorner, URCorner,
-                        URCorner, BRCorner,
-                        BRCorner, BLCorner
-                    };
-                    Gizmos.color = Color.black;
-                    Gizmos.DrawLineList(points);
-                }
-            }
-
+        return points;
+        
     }
 }

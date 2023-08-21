@@ -31,9 +31,10 @@ public class AStarGrid : MonoBehaviour
         MakeGrid();
     } 
 
-    public void Update(){
-        MakeGrid();
-    }
+    //removed because gizmo will override it.
+    // public void Update(){
+    //     MakeGrid();
+    // }
 
     public void MakeGrid() {
         Vector3 bottomLeft = gridTransform.position - (gridTransform.forward*(gridWorldSize.y/2)) - (gridTransform.right*(gridWorldSize.x/2));

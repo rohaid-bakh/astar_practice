@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
+using System.Diagnostics;
 
 public class PathFinding : MonoBehaviour
 {
@@ -18,9 +19,11 @@ public class PathFinding : MonoBehaviour
    }   
 
    public void Update(){
-    ShortestPath(startPoint.position, endPoint.position);
+        ShortestPath(startPoint.position, endPoint.position);
    }
    public void ShortestPath(Vector3 startPosition, Vector3 endPosition){
+    Stopwatch S = new Stopwatch();
+    S.Start();
     List<Node> Open = new List<Node>();
     List<Node> Closed = new List<Node>();
     Node startNode = grid.WorldToNode(startPosition);
@@ -38,6 +41,8 @@ public class PathFinding : MonoBehaviour
             Open.Remove(currentNode);
             Closed.Add(currentNode);
             if(currentNode == endNode){
+                S.Stop();
+                UnityEngine.Debug.Log(S.ElapsedMilliseconds + " ms");
                 getPath(endNode, startNode);
                 return;
             }

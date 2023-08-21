@@ -61,6 +61,7 @@ public class PathFinding : MonoBehaviour
             }
 
         }
+        
    }
 
     //what if the start and end node are one and the same?

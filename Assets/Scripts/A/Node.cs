@@ -11,6 +11,7 @@ public class Node : IHeapItem<Node>
    public Node parent; 
    public int gCost;
    public int hCost;
+   private int _heapIndex;
    
    public Node(bool _isObstacle, Vector3 _worldPosition, int _xCoord, int _yCoord){
     isObstacle = _isObstacle;
@@ -27,10 +28,10 @@ public class Node : IHeapItem<Node>
 
    public int HeapIndex {
       get {
-         return HeapIndex;
+         return _heapIndex;
       }
       set {
-         HeapIndex = value;
+         _heapIndex = value;
       }
    }
 

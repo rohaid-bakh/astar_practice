@@ -20,6 +20,12 @@ public class AStarGrid : MonoBehaviour
 
     public List<Node> path;
 
+    public int MaxSize{
+        get {
+            return gridSizeX*gridSizeY;
+        }
+    }
+
     public void Start() {
         Assert.IsNotNull(gridTransform);
         Assert.IsNotNull(detectableObj);
@@ -30,11 +36,6 @@ public class AStarGrid : MonoBehaviour
         path = new List<Node>();
         MakeGrid();
     } 
-
-    //removed because gizmo will override it.
-    // public void Update(){
-    //     MakeGrid();
-    // }
 
     public void MakeGrid() {
         Vector3 bottomLeft = gridTransform.position - (gridTransform.forward*(gridWorldSize.y/2)) - (gridTransform.right*(gridWorldSize.x/2));
@@ -90,16 +91,20 @@ public class AStarGrid : MonoBehaviour
     {
         if(grid == null) return;
 
-        Gizmos.color = Color.blue;
-        foreach(Node n in grid){
-            
+        if(!debug){
+            foreach(Node n in path){
+                Vector3[] points = DrawGridSquare(n);
+                Gizmos.color = Color.yellow;
+                Gizmos.DrawLineList(points);
+            }
+        } else {
+            Gizmos.color = Color.blue;
+            foreach(Node n in grid){
             Vector3[] points = DrawGridSquare(n);
-
             Gizmos.color = n.isObstacle? Color.red: Color.blue;
             if(n == WorldToNode(detectableObj.position)){
                 Gizmos.color = Color.green;
             }
-            
             if(path.Contains(n)){
                 Gizmos.color = Color.yellow;
                 Gizmos.DrawLineList(points);
@@ -107,6 +112,11 @@ public class AStarGrid : MonoBehaviour
                 Gizmos.DrawLineList(points);
             }
         }
+
+        }
+
+
+       
     }
 
     private Vector3[] DrawGridSquare(Node n){

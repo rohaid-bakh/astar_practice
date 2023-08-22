@@ -3,47 +3,63 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
 using System.Diagnostics;
+using TMPro;
 
 public class PathFinding : MonoBehaviour
 {
    public AStarGrid grid;
    public Transform startPoint;
    public Transform endPoint;
-
+   private Input input; 
+   public TextMeshProUGUI pathFoundText;
 
    public void Awake(){
     grid = GetComponent<AStarGrid>();
     Assert.IsNotNull(grid, "Can't find AStarGrid Script");
     Assert.IsNotNull(startPoint);
     Assert.IsNotNull(endPoint);
-   }   
+    Assert.IsNotNull(pathFoundText);
 
-   public void Update(){
-        ShortestPath(startPoint.position, endPoint.position);
+    pathFoundText.enabled = false;
+    input = new Input();
+    input.Enable();
+    input.Grid.Enable();
+    input.Grid.Path.Enable();
+   } 
+
+   void OnEnable(){
+    input.Enable();
+    input.Grid.Enable();
+    input.Grid.Path.Enable();
+   }  
+    void OnDisable()
+   {
+    input.Grid.Path.Disable();
+    input.Grid.Disable();
+    input.Disable();
+   }
+
+   void OnPath(){
+    ShortestPath(startPoint.position, endPoint.position);
    }
    public void ShortestPath(Vector3 startPosition, Vector3 endPosition){
     Stopwatch S = new Stopwatch();
     S.Start();
-    List<Node> Open = new List<Node>();
-    List<Node> Closed = new List<Node>();
+    Heap<Node> Open = new Heap<Node>(grid.MaxSize);
+    HashSet<Node> Closed = new HashSet<Node>();
     Node startNode = grid.WorldToNode(startPosition);
     Node endNode = grid.WorldToNode(endPosition);
     Node currentNode;
     Open.Add(startNode);
-        while(Open.Count > 0){
-            currentNode = Open[0];
-            for(int i = 1; i < Open.Count ; i++){
-               if(Open[i].fCost < currentNode.fCost || 
-                (Open[i].fCost == currentNode.fCost && Open[i].hCost < currentNode.hCost)){
-                    currentNode = Open[i];
-                }
-            }
-            Open.Remove(currentNode);
+        while(Open.Length > 0){
+            currentNode = Open.getTop();
             Closed.Add(currentNode);
+
             if(currentNode == endNode){
                 S.Stop();
                 UnityEngine.Debug.Log(S.ElapsedMilliseconds + " ms");
                 getPath(endNode, startNode);
+                pathFoundText.enabled = false;
                 return;
             }
            
@@ -66,6 +82,8 @@ public class PathFinding : MonoBehaviour
             }
 
         }
+
+        pathFoundText.enabled = true;
         
    }
 

@@ -12,7 +12,7 @@ public class AStarGrid : MonoBehaviour
 
     public Transform detectableObj;
     public Transform gridTransform;
-    public TextMeshProUGUI debug1, debug2, debug3, debug4;
+    public TextMeshProUGUI debugText1, debugText2, debugText3, debugText4;
 
     int gridSizeX, gridSizeY;
     public bool debug = false;
@@ -63,6 +63,7 @@ public class AStarGrid : MonoBehaviour
     }
 
     public List<Node> GetNeighbor(Node curr){
+        Assert.IsNotNull(curr, "The Node being passed into GetNeighbor is null");
         int xCoord = curr.xCoord;
         int yCoord = curr.yCoord;
         List<Node> neighbors = new List<Node>();

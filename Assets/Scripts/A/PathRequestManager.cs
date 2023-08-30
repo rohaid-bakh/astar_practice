@@ -6,9 +6,10 @@ using System;
 
 public class PathRequestManager : MonoBehaviour
 {
-    Queue<RequestData> requestQueue;
+    PathFinding pathFinder; 
+    Queue<RequestData> requestQueue = new Queue<RequestData>();
     bool inProgress;
-    static PathRequestManager instance;
+    public static PathRequestManager instance;
     RequestData curr;
 
     //check on the singleton structure
@@ -16,6 +17,8 @@ public class PathRequestManager : MonoBehaviour
         Assert.IsNull(instance, "Are there any scenes that have this class?");
         instance = this;
         inProgress = false;
+        pathFinder = GetComponent<PathFinding>();
+        Assert.IsNotNull(pathFinder, "There is no PathFinding script attached to this object");
     }
     public static void Request(Vector3 start, Vector3 end, Action<Vector3[], bool> callback){
         RequestData newRequest = new RequestData(start, end, callback);
@@ -27,11 +30,11 @@ public class PathRequestManager : MonoBehaviour
         if(!inProgress && requestQueue.Count > 0){
             inProgress = true;
             curr = requestQueue.Dequeue();
-            // PathFinding.StartFindPath(curr.start, curr.end);
+            pathFinder.StartFindPath(curr.start, curr.end);
         }
     }
 
-    private void FinishedPath(Vector3[] path, bool isSuccess){
+    public void FinishedPath(Vector3[] path, bool isSuccess){
         curr.callback(path, isSuccess);
         inProgress = false;
         TryPath();

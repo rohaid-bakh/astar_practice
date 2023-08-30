@@ -18,22 +18,19 @@ public class AStarGrid : MonoBehaviour
     public bool debug = false;
     float nodeDiameter;
 
-    public List<Node> path;
-
     public int MaxSize{
         get {
             return gridSizeX*gridSizeY;
         }
     }
 
-    public void Start() {
+    public void Awake() {
         Assert.IsNotNull(gridTransform);
         Assert.IsNotNull(detectableObj);
         nodeDiameter = nodeRadius*2;
         gridSizeX = Mathf.FloorToInt(gridWorldSize.x/nodeDiameter);
         gridSizeY = Mathf.FloorToInt(gridWorldSize.y/nodeDiameter);
         grid = new Node[gridSizeX,gridSizeY];
-        path = new List<Node>();
         MakeGrid();
     } 
 
@@ -92,13 +89,7 @@ public class AStarGrid : MonoBehaviour
     {
         if(grid == null) return;
 
-        if(!debug){
-            foreach(Node n in path){
-                Vector3[] points = DrawGridSquare(n);
-                Gizmos.color = Color.yellow;
-                Gizmos.DrawLineList(points);
-            }
-        } else {
+        if(debug)
             Gizmos.color = Color.blue;
             foreach(Node n in grid){
             Vector3[] points = DrawGridSquare(n);
@@ -106,18 +97,8 @@ public class AStarGrid : MonoBehaviour
             if(n == WorldToNode(detectableObj.position)){
                 Gizmos.color = Color.green;
             }
-            if(path.Contains(n)){
-                Gizmos.color = Color.yellow;
-                Gizmos.DrawLineList(points);
-            } else {
-                Gizmos.DrawLineList(points);
-            }
+            Gizmos.DrawLineList(points);
         }
-
-        }
-
-
-       
     }
 
     private Vector3[] DrawGridSquare(Node n){

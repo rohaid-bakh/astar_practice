@@ -2,46 +2,63 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Node : IHeapItem<Node>
-{
-   public bool isObstacle;
-   public Vector3 worldPosition;
-   public int xCoord;
-   public int yCoord;
-   public Node parent; 
-   public int gCost;
-   public int hCost;
-   private int _heapIndex;
-   
-   public Node(bool _isObstacle, Vector3 _worldPosition, int _xCoord, int _yCoord){
-    isObstacle = _isObstacle;
-    worldPosition = _worldPosition;
-    xCoord = _xCoord;
-    yCoord = _yCoord;
-   }
+public class Node : IHeapItem<Node>{
+    [Header("Parent Node")]
+    public Node parent; // shouldn't I encapsulate this?
 
-   public int fCost {
-      get{
-         return gCost + hCost;
-      }
-   }
+    [Header("Obstacle?")]
+    public bool isObstacle;
 
-   public int HeapIndex {
-      get {
-         return _heapIndex;
-      }
-      set {
-         _heapIndex = value;
-      }
-   }
+    [Header("Position")]
+    public int xCoord;
+    public int yCoord;
+    public Vector3 worldPosition;
 
-   public int CompareTo(Node nodeToCompare){
-      int compare = fCost.CompareTo(nodeToCompare.fCost);
-      if(compare == 0){
-         compare = hCost.CompareTo(nodeToCompare.hCost);
-      }
-      // inverting the result because we want the node 
-      // the lowest f cost/h cost
-      return compare * -1 ;
-   }
+    [Header("Travel Cost")]
+    public int gCost;
+    public int hCost;
+    private int _heapIndex;
+    public int terrainCost;
+
+    public Node(bool _isObstacle, Vector3 _worldPosition, int _xCoord, int _yCoord, int _terrainCost){
+        isObstacle = _isObstacle;
+        worldPosition = _worldPosition;
+        xCoord = _xCoord;
+        yCoord = _yCoord;
+        terrainCost = _terrainCost;
+    }
+
+
+    /// <summary> The Fcost of the Node. Calculated by adding Gcost + Hcost </summary>
+    public int fCost{
+        get{
+            return gCost + hCost;
+        }
+    }
+
+    /// <summary> Position on the Heap </summary>
+    public int HeapIndex{
+        get{
+            return _heapIndex;
+        }
+        set{
+            _heapIndex = value;
+        }
+    }
+
+    /// <summary> 
+    /// <para> Returns 1 if the current node has a lower Fcost or 
+    /// if the Fcosts are the same,
+    /// the lower hCost to the node being compared against.
+    /// </para>
+    ///  </summary>
+    public int CompareTo(Node nodeToCompare){
+        int CostCompareResult = fCost.CompareTo(nodeToCompare.fCost);
+        if (CostCompareResult == 0){
+            CostCompareResult = hCost.CompareTo(nodeToCompare.hCost);
+        }
+        // inverting the result because we want the node 
+        // the lowest f cost/h cost
+        return CostCompareResult * -1;
+    }
 }

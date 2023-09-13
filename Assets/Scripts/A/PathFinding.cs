@@ -19,9 +19,7 @@ public class PathFinding : MonoBehaviour
         pathRequestManager = GetComponent<PathRequestManager>();
         Assert.IsNotNull(pathRequestManager, $"PathRequestManager is not attached to {transform.name}");
         Assert.IsNotNull(grid, $"Grid is not attached to {transform.name}");
-        Assert.IsNotNull(pathFoundText);
 
-        pathFoundText.enabled = false;
         input = new Input();
         input.Enable();
         input.Grid.Enable();
@@ -63,14 +61,13 @@ public class PathFinding : MonoBehaviour
         {
             Node currentNode;
             Open.Add(startNode);
-            while (Open.Length > 0)
+            while (Open.Count > 0)
             {
                 currentNode = Open.getTop();
                 Closed.Add(currentNode);
 
                 if (currentNode == endNode)
                 {
-                    pathFoundText.enabled = false;
                     isPathFound = true;
                     break;
                 }
@@ -83,15 +80,18 @@ public class PathFinding : MonoBehaviour
                     {
                         continue;
                     }
-                    int distCurrToNeighbor = getDistance(currentNode, n) + currentNode.gCost;
+                    int distCurrToNeighbor = getDistance(currentNode, n) + currentNode.gCost + n.terrainCost;
                     if (distCurrToNeighbor < n.gCost || !Open.Contains(n))
                     {
                         n.gCost = distCurrToNeighbor;
+                        //shouldn't this factor in the weights of the path?
                         n.hCost = getDistance(n, endNode);
                         n.parent = currentNode;
                         if (!Open.Contains(n))
                         {
                             Open.Add(n);
+                        } else {
+                            Open.reSort(n);
                         }
                     }
 
@@ -103,8 +103,7 @@ public class PathFinding : MonoBehaviour
         if(isPathFound){
             wayPoints = getPath(endNode, startNode);   
         } 
-        pathRequestManager.FinishedPath(wayPoints, isPathFound); 
-        
+        pathRequestManager.FinishedPath(wayPoints, isPathFound);    
         
     }
 
@@ -186,6 +185,7 @@ public class PathFinding : MonoBehaviour
         }
     }
 
+    //Draws the original path.
     // void OnDrawGizmos()
     // {
     //     if(path != null){
